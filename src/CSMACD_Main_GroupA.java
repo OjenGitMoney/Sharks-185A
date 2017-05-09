@@ -3,7 +3,6 @@ import java.util.Scanner;
 public class CSMACD_Main_GroupA {
 
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
 
         int hostNumber;					/**< Integer containing number of hosts */
         int transNumber;				/**< Integer containing transmission number*/

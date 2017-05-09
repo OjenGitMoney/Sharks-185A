@@ -1,3 +1,8 @@
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.SynchronousQueue;
+
 public class virtualHost extends Thread{
 
     private int count = 0;				/**< Private integer for count for number of collisions */
@@ -5,6 +10,7 @@ public class virtualHost extends Thread{
     private String name;			/**< Private String variable for Hostname */
     private int num;				/**< Private integer for total number of transmissions */
     private int propDelay;			/**< Private integer for sending delay */
+
 
     /**
      * Default constructor, for hosts, running a common bus (channel)
@@ -18,19 +24,21 @@ public class virtualHost extends Thread{
         this.propDelay = propDelay;
     }
     public void run() {
-        // TODO Auto-generated method stub
 
-        int time;
+        //long startTransmission = ;
         //Transmission cycle starts here..
         for (int n = 1; n <= num; n++) {
             //Each host before sending sleep for random time
             try {
                 Thread.sleep((int) (Math.random() * propDelay) / 2);
             } catch (InterruptedException e) {
-                System.err.println("Inturrupted: Interrupt exception ");
+
+                System.err.println(new Timestamp(System.currentTimeMillis()).toString().substring(11) + " | Inturrupted: Interrupt exception ");
             }
             //Starts sending output host ID starting time of transmission
+
             count = 0;
+            int counter = 0;
             //try to send: 10 times..
             while (count < 10) {
                 //According to the situation of the bus, do transmission-retransmission
@@ -39,24 +47,36 @@ public class virtualHost extends Thread{
                     try {
                         Thread.sleep(propDelay);
                     } catch (InterruptedException e) {
-                        System.err.println("Inturrupted: Interrupt exception");
+
+                        System.err.println(new Timestamp(System.currentTimeMillis()).toString().substring(11) + " | Inturrupted: Interrupt exception");
                     }
                     bus++;
                 }
                 else {
-                    System.out.println("Shred bus is non-idle");
+
+                    System.out.println(new Timestamp(System.currentTimeMillis()).toString().substring(11) + " | Shred bus is non-idle");
+                    counter++;
+                    if ( counter == 50){
+                        break;
+                    }
                     continue;
+
+
+
+
                 }
 
                 try {
                     Thread.sleep(propDelay);
                 } catch (InterruptedException e) {
-                    System.err.println("Inturrupted: Interrupt exception");
+
+                    System.err.println(new Timestamp(System.currentTimeMillis()).toString().substring(11)  + " | Inturrupted: Interrupt exception");
                 }
 
                 //bus = 1 means:: bus empty, packet successfully sent to destination
                 if(bus==1) {
-                    System.out.println("Host["+name+"]Packet " +n+ " Sent successfully!");
+
+                    System.out.println(new Timestamp(System.currentTimeMillis()).toString().substring(11) + " | Host["+name+"]Packet " +n+ " Sent successfully!");
                     bus=0;
                     break;
                 }
@@ -64,21 +84,23 @@ public class virtualHost extends Thread{
                 //bus = 2 means:: collision between packets while trying to sent them
                 if(bus==2) {
                     count++;
-                    System.out.println("Host computer["+name+"]Packet " +count+ " Collision!");
+
+                    System.out.println(new Timestamp(System.currentTimeMillis()).toString().substring(11) + " | Host computer["+name+"]Packet " +count+ " Collision!");
                     bus=0;
                     //increase idle time after each failed transmission
                     try {
                         backoffTimer timer = new backoffTimer();
                         Thread.sleep(2*propDelay*timer.backoffTime(count));
                     } catch (InterruptedException e) {
-                        System.err.println("Inturrupted: Interrupt exception");
+
+                        System.err.println(new Timestamp(System.currentTimeMillis()).toString().substring(11) + " | Inturrupted: Interrupt exception");
                     }
                     continue;
                 }
             }
             //Retransmission failed for last 10 times? Transmission failure.
             if (count >= 10){
-                System.out.println("Host computer[" + name + "]Packet " +n+ " transmission failure.");
+                System.out.println(new Timestamp(System.currentTimeMillis()).toString().substring(11) + " | Host computer[" + name + "]Packet " +n+ " transmission failure.");
             }
         }
     }
